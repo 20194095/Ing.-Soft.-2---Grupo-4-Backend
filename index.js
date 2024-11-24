@@ -1,18 +1,25 @@
-import express from 'express';
-import usuarioRoutes from './src/routes/usuarioRoutes.js';
-import contractRoutes from './src/routes/contractRoutes.js';
-import orderRoutes from './src/routes/orderRoutes.js';
-import productRoutes from './src/routes/productRoutes.js'; // Importa las rutas de productos
+import app from "./app.js";
+import sequelize from "./src/config/database.js";
 
-const app = express();
+async function main() {
+    try {
+        const init = process.argv[2];
 
-app.use(express.json());
-app.use('/usuarios', usuarioRoutes);
-app.use('/contratos', contractRoutes);
-app.use('/pedidos', orderRoutes);
-app.use('/productos', productRoutes); // Agrega la ruta de productos
+        if (init) {
+            await sequelize.sync({ force: true });
+        } else {
+            await sequelize.sync({ alter: true });
+        }
 
-const PORT = 4001;
-app.listen(PORT, () => {
-    console.log(`Servidor ejecutándose en el puerto ${PORT}`);
-});
+        console.log("Base de datos sincronizada correctamente.");
+
+        const PORT = 4001;
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en el puerto ${PORT}`);
+        });
+    } catch (error) {
+        console.error("Error al iniciar la aplicación:", error);
+    }
+}
+
+main();

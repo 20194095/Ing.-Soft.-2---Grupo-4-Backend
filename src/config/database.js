@@ -1,12 +1,17 @@
-import pkg from 'pg';
-const { Pool } = pkg;
+import Sequelize from "sequelize";
 
-const pool = new Pool({
-    user: 'postgres', // Asegúrate de usar tu usuario correcto
-    host: 'localhost', // Cambia si es necesario
-    database: 'matricula2024', // Cambia si tu base de datos es diferente
-    password: 'kolasito21', // Cambia por tu contraseña
-    port: 5432, // Cambia si tu puerto es diferente
+const hostname = 'localhost';
+const username = 'postgres';
+const password = 'kolasito21';
+const database = 'matricula2024';
+const port = 5432;
+const dialect = 'postgres';
+
+const sequelize = new Sequelize(database, username, password, {
+    host: hostname,
+    port: port,
+    dialect: dialect,
+    logging: false, // Desactiva logs de Sequelize
 });
 
-export default pool;
+export default sequelize;

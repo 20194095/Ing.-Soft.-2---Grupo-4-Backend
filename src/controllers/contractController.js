@@ -1,62 +1,70 @@
-import contractRepository from '../repositories/contractRepository.js';
+import contractRepository from "../repositories/contractRepository.js";
 
-const getAllContracts = async (req, res) => {
-    try {
-        const contracts = await contractRepository.findAll();
-        res.status(200).json(contracts);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching contracts', error: error.message });
-    }
-};
-
-const getContractById = async (req, res) => {
-    try {
-        const contract = await contractRepository.findById(req.params.id);
-        if (contract) {
-            res.status(200).json(contract);
-        } else {
-            res.status(404).json({ message: 'Contract not found' });
+const contractController = {
+    getAllContracts: async (req, res) => {
+        try {
+          const contracts = await contractRepository.findAll();
+      
+          // Validar que contracts sea un array
+          if (!Array.isArray(contracts)) {
+            console.error("La base de datos devolvió datos no válidos:", contracts);
+            return res.status(500).json({ message: "Datos no válidos del servidor" });
+          }
+      
+          res.status(200).json(contracts);
+        } catch (error) {
+          res.status(500).json({ message: "Error al obtener contratos", error: error.message });
         }
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching contract', error: error.message });
-    }
-};
+      },
 
-const createContract = async (req, res) => {
+  getContractById: async (req, res) => {
     try {
-        const newContract = req.body;
-        const createdContract = await contractRepository.create(newContract);
-        res.status(201).json(createdContract);
+      const contract = await contractRepository.findById(req.params.id);
+      if (contract) {
+        res.status(200).json(contract);
+      } else {
+        res.status(404).json({ message: "Contrato no encontrado" });
+      }
     } catch (error) {
-        res.status(500).json({ message: 'Error creating contract', error: error.message });
+      res.status(500).json({ message: "Error al obtener contrato", error: error.message });
     }
-};
+  },
 
-const updateContract = async (req, res) => {
+  createContract: async (req, res) => {
     try {
-        const updatedContract = req.body;
-        const success = await contractRepository.update(req.params.id, updatedContract);
-        if (success) {
-            res.status(200).json({ message: 'Contract updated successfully' });
-        } else {
-            res.status(404).json({ message: 'Contract not found' });
-        }
+      const newContract = await contractRepository.create(req.body);
+      res.status(201).json(newContract);
     } catch (error) {
-        res.status(500).json({ message: 'Error updating contract', error: error.message });
+      res.status(500).json({ message: "Error al crear contrato", error: error.message });
     }
-};
+  },
 
-const deleteContract = async (req, res) => {
+  updateContract: async (req, res) => {
     try {
-        const success = await contractRepository.remove(req.params.id);
-        if (success) {
-            res.status(200).json({ message: 'Contract deleted successfully' });
-        } else {
-            res.status(404).json({ message: 'Contract not found' });
-        }
+      const success = await contractRepository.update(req.params.id, req.body);
+      if (success) {
+        res.status(200).json({ message: "Contrato actualizado correctamente" });
+      } else {
+        res.status(404).json({ message: "Contrato no encontrado" });
+      }
     } catch (error) {
-        res.status(500).json({ message: 'Error deleting contract', error: error.message });
+      res.status(500).json({ message: "Error al actualizar contrato", error: error.message });
     }
+  },
+
+  deleteContract: async (req, res) => {
+    try {
+      const success = await contractRepository.remove(req.params.id);
+      if (success) {
+        res.status(200).json({ message: "Contrato eliminado correctamente" });
+      } else {
+        res.status(404).json({ message: "Contrato no encontrado" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Error al eliminar contrato", error: error.message });
+    }
+  },
 };
 
-export default { getAllContracts, getContractById, createContract, updateContract, deleteContract };
+export default contractController;
+
